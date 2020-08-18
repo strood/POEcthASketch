@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.13/dist/shoelace/shoelace.css">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.13/dist/shoelace/shoelace.esm.js"></script>
+  </head>
+  <body>
+  </body>
+  <script type="text/javascript">
+
+  // Set page title
+  document.title = "Etch-A-Sketch"
+
+  // Setup elements and basic page structure
+  const body = document.querySelector('body');
+  body.style.display = 'flex';
+  body.style.flexDirection = 'column';
+  body.style.alignItems = 'center';
+  body.style.backgroundColor = '#4C1036';
+
+  // main title and directions bars
+  let header  = document.createElement('div');
+  header.style.display = 'flex';
+  header.style.flexDirection = 'column';
+  header.style.alignItems = 'center';
+  header.style.backgroundColor = '#DE6449';
+  header.style.padding = '0.5%';
+  header.style.border = '3px solid #41D3BD';
+
+  let title  = document.createElement('h1');
+  let directions  = document.createElement('h2');
+  title.textContent = "Etch-A-Sketch";
+  directions.textContent = "Select a grid size between 1-75. Select color. Reset grid for a fresh start.";
+  header.appendChild(title);
+  header.appendChild(directions);
+
+
+  // Buttons and inputs
+
+  // Input div
+  let inputDiv = document.createElement('div');
+  inputDiv.style.display = 'flex';
+  inputDiv.style.marginBottom = '1%';
+  inputDiv.style.alignItems = 'center';
+
+
+  // Input Form
+  let inputForm = document.createElement('sl-form');
+  inputForm.style.display = 'flex';
+
+  let resizeButton = document.createElement('sl-button');
+  resizeButton.textContent = "Resize Grid";
+  resizeButton.style.marginTop = '2%';
+  resizeButton.submit = true;
+  resizeButton.addEventListener('click', (e) => {
+    // Make this re-render with the values from this div
+
+    renderBoard(rowsInput.value, columnInput.value);
+  });
+
+  // Column and Row inputs
+  let columnInput = document.createElement('sl-input');
+  columnInput.value = 16;
+  columnInput.max = 75;
+  columnInput.min = 1;
+  columnInput.size = 'small';
+  columnInput.label = 'Columns';
+
+  let rowsInput = document.createElement('sl-input');
+  rowsInput.value = 16;
+  rowsInput.max = 75;
+  rowsInput.min = 1;
+  rowsInput.size = 'small';
+  rowsInput.label = 'Rows';
+
+  // Color selector input
+  let colorInput = document.createElement('sl-color-picker');
+  colorInput.style.marginLeft = '2%';
+
+
+  // reset button
+  let resetButton = document.createElement('sl-button');
+  resetButton.textContent = "Reset Grid";
+  resetButton.style.marginLeft = '2%';
+  resetButton.addEventListener('click', () => {
+    // Rerenders page with default vals
+    columnInput.value = 16;
+    rowsInput.value = 16;
+    renderBoard(16, 16);
+  });
+
+  inputForm.appendChild(columnInput);
+  inputForm.appendChild(rowsInput);
+  inputForm.appendChild(resizeButton);
+  inputDiv.appendChild(inputForm);
+  inputDiv.appendChild(colorInput);
+  inputDiv.appendChild(resetButton);
+  header.appendChild(inputDiv);
+
+  // grid container setup and style
+  const container = document.createElement('div');
+  container.style.display = 'flex';
+  container.style.flexWrap = 'wrap';
+  container.style.justifyContent = 'center';
+  container.style.width = '500px';
+  container.style.height = '500px';
+  container.style.backgroundColor = 'gray';
+  container.style.border = '3px solid black';
+  container.style.margin = '0.5%';
+
+
+  // attach components to page
+  body.appendChild(header)
+  body.appendChild(container)
+
+
+  // ======FUNCTIONS=========
+
+  // Fill board with rows and columns, will make this edit-able so will make sure
+  // to bound the number under 75 and above 1
+  let renderBoard = function(rows = 16, columns = 16) {
+    // Reset container by wiping all nodes
+    removeAllChildNodes(container);
+
+    // Remove error message on reload
+    if (document.getElementById('errorDiv')) {
+      let div = document.getElementById('errorDiv');
+      div.parentNode.removeChild(div)
+    }
+    // Render error if invalid input, and render standard default board instead
+    if (rows < 1 || rows > 75 || columns < 1 || columns > 75) {
+
+      let errorDiv = document.createElement('div')
+      errorDiv.setAttribute('id', 'errorDiv');
+      errorDiv.style.color = 'red';
+      errorDiv.textContent = "Invalid sizing, rows and columns must be positive," +
+                          "and less then 75"
+      body.insertBefore(errorDiv, container)
+      rows = 16
+      columns = 16
+    }
+
+    // loop through rows and columns setting them up and styling.
+    for (let row = 1; row <= rows; row++) {
+      let rowDiv = document.createElement('div');
+      rowDiv.style.display = 'flex';
+      rowDiv.style.width = '100%';
+      rowDiv.style.flexGrow = 1;
+
+      for (let column = 1; column <= columns; column++) {
+        let columnDiv = document.createElement('div');
+        columnDiv.style.display = 'flex';
+        columnDiv.style.outline = '1px solid black';
+        columnDiv.style.height = '100%';
+        columnDiv.style.flexGrow = 1;
+        columnDiv.addEventListener('mouseenter', () => {
+          columnDiv.style.backgroundColor = colorInput.value
+
+        })
+
+        rowDiv.appendChild(columnDiv);
+      }
+      container.appendChild(rowDiv);
+    }
+
+  }
+
+  // helper function to clear board
+  function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+  }
+
+  // helper function to change background color of div to currently selected color
+  function changeColor(node) {
+    node.backgroundColor = colorInput.value
+  }
+
+  // Render a default board on page load
+  document.onload = renderBoard(16, 16);
+
+  </script>
+
+</html>
