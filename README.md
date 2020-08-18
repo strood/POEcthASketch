@@ -2,7 +2,7 @@
 
 A project built for Project Odin Web Development course.
 
-[LIVE DEMO]() -Try it out!
+[LIVE DEMO](https://strood.github.io/POEcthASketch/) -Try it out!
 
 ## Built Using
 
