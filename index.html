@@ -3,12 +3,18 @@
   <head>
     <meta charset="utf-8">
     <title></title>
+    <!-- Include shoelace style for buttons/forms web components -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.13/dist/shoelace/shoelace.css">
     <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.13/dist/shoelace/shoelace.esm.js"></script>
+    <!-- Include dom-to-image and filesaver js libraries to do saving of file -->
+    <script src="https://cdn.bootcss.com/dom-to-image/2.6.0/dom-to-image.min.js" charset="utf-8"></script>
+    <script src="https://cdn.bootcss.com/FileSaver.js/2014-11-29/FileSaver.min.js" charset="utf-8"></script>
   </head>
   <body>
   </body>
   <script type="text/javascript">
+
+  // ============BASIC STYLE==============
 
   // Set page title
   document.title = "Etch-A-Sketch"
@@ -37,7 +43,7 @@
   header.appendChild(directions);
 
 
-  // Buttons and inputs
+  // ====== Buttons and inputs=====
 
   // Input div
   let inputDiv = document.createElement('div');
@@ -91,6 +97,7 @@
     renderBoard(16, 16);
   });
 
+  // setup nodes on input div/form
   inputForm.appendChild(columnInput);
   inputForm.appendChild(rowsInput);
   inputForm.appendChild(resizeButton);
@@ -111,27 +118,36 @@
   container.style.margin = '0.5%';
 
 
+  // Save/Download button
+  let saveButton = document.createElement('sl-button')
+  saveButton.textContent = 'Save!';
+  saveButton.addEventListener('click', () => {
+    domtoimage.toBlob(container).then((blob) => {
+      window.saveAs(blob, 'my-sketch.png');
+    })
+  });
+
   // attach components to page
-  body.appendChild(header)
-  body.appendChild(container)
+  body.appendChild(header);
+  body.appendChild(container);
+  body.appendChild(saveButton);
 
 
   // ======FUNCTIONS=========
 
   // Fill board with rows and columns, will make this edit-able so will make sure
   // to bound the number under 75 and above 1
-  let renderBoard = function(rows = 16, columns = 16) {
+
+  renderBoard = function(rows = 16, columns = 16) {
+
     // Reset container by wiping all nodes
     removeAllChildNodes(container);
 
     // Remove error message on reload
-    if (document.getElementById('errorDiv')) {
-      let div = document.getElementById('errorDiv');
-      div.parentNode.removeChild(div)
-    }
-    // Render error if invalid input, and render standard default board instead
-    if (rows < 1 || rows > 75 || columns < 1 || columns > 75) {
+    removeError();
 
+    if (rows < 1 || rows > 75 || columns < 1 || columns > 75) {
+      // Render error if invalid input, and render standard default board instead
       let errorDiv = document.createElement('div')
       errorDiv.setAttribute('id', 'errorDiv');
       errorDiv.style.color = 'red';
@@ -155,18 +171,26 @@
         columnDiv.style.outline = '1px solid black';
         columnDiv.style.height = '100%';
         columnDiv.style.flexGrow = 1;
+        // Add mouseenter listener to change color when hovered over
         columnDiv.addEventListener('mouseenter', () => {
           columnDiv.style.backgroundColor = colorInput.value
-
         })
-
+        // append new column into row
         rowDiv.appendChild(columnDiv);
       }
+      // append completed row into container
       container.appendChild(rowDiv);
     }
 
   }
 
+  // Remove error node when reloaded
+  function removeError() {
+    if (document.getElementById('errorDiv')) {
+      let div = document.getElementById('errorDiv');
+      div.parentNode.removeChild(div)
+    }
+  }
   // helper function to clear board
   function removeAllChildNodes(parent) {
     while (parent.firstChild) {
@@ -174,13 +198,8 @@
     }
   }
 
-  // helper function to change background color of div to currently selected color
-  function changeColor(node) {
-    node.backgroundColor = colorInput.value
-  }
-
   // Render a default board on page load
-  document.onload = renderBoard(16, 16);
+  document.onload = renderBoard();
 
   </script>
 
