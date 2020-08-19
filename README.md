@@ -6,9 +6,11 @@ A project built for Project Odin Web Development course.
 
 ## Built Using
 
-- Javascript for functionality
+- Vanilla Javascript for functionality
 - [Shoelace.style](https://shoelace.style/) for some basic pre-stylized web components.
 - [Normalize CSS](https://github.com/necolas/normalize.css/blob/master/normalize.css) for basic CSS reset
+- [DOM-to-image](https://github.com/tsayen/dom-to-image) to convert image to blob.
+- [FileSaver.js](https://github.com/eligrey/FileSaver.js) to download image once converted
 
 
 ## Description
@@ -18,3 +20,5 @@ Practice DOM manipulation by making an etch-a-sketch project that utilizes hover
 Dynamically generate a new grid based on user input.
 
 Create, modify and style HTML elements using JS.
+
+Save completed artwork from browser as a png file. 
